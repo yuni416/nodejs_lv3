@@ -75,8 +75,8 @@ router.route('/:_postId')
         try {
             const postId = req.params._postId
             const { password } = req.body
+            // [ ]?
             const [post] = await Posts.find({ _id: postId })
-
             if (!post) {
                 return res.status(404).json({ message: '게시글 조회에 실패하였습니다.' })
             }

@@ -6,12 +6,10 @@ const commentsSchema = new mongoose.Schema({
         required: true
     },
     user: {
-        type: String,
-        required: true
+        type: String
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
     content: {
         type: String,

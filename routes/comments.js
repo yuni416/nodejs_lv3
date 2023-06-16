@@ -3,11 +3,10 @@ const express = require('express');
 const router = express.Router();
 
 //schemes 불러오기
-const Posts = require('../schemas/post.js');
 const Comments = require('../schemas/comment.js');
 
 router.route('/:_postId')
-    //댓글 조회
+    //댓글 목록 조회
     .get(async (req, res) => {
         try {
             const postId = req.params._postId
@@ -27,7 +26,7 @@ router.route('/:_postId')
     });
 
 router.route('/:_postId')
-    //댓글 작성
+    //댓글 생성
     .post(async (req, res) => {
         try {
             const postId = req.params._postId
@@ -61,8 +60,8 @@ router.route('/:_commentId')
                 return res.status(404).json
             } 
         }
-        catch (e) {
-            res.status(400).json({message: e.message})
+        catch {
+            res.status(400).json({message: '데이터 형식이 올바르지 않습니다.'})
         }
     })
 //댓글 삭제
@@ -80,8 +79,8 @@ router.route('/:_commentId')
             } else {
                 return res.status(404).json
             }
-        } catch (e){
-            return res.status(400).json({ message: e.message})
+        } catch {
+            return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.'})
         }
     })
 
