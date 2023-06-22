@@ -17,7 +17,7 @@ router.get("/users/me", authMiddleware, async(req,res) =>{
 })
 
 // 회원가입 API
-router.post("/users", async (req, res) => {
+router.post("/signup", async (req, res) => {
     const { nickname, password, confirmPassword } = req.body;
     // 닉네임 구성 조건
     const nick = /[a-zA-Z0-9]/
@@ -51,6 +51,24 @@ router.post("/users", async (req, res) => {
 
     res.status(201).json({});
 });
+
+router.post('/login', async (req, res) => {
+    const { nickname, password } = req.body;
+    const user = await User.findOne({ nickname: nickname })
+    if (!user) {
+      return res.status(409).json({ errMessage: "가입되지 않은 아이디입니다. 아이디를 확인해주세요." });
+    } else if (password !== user.password) {
+      return res.status(409).json({ errMessage: "비밀번호를 확인해주세요." });
+    }
+  
+    const token = jwt.sign({
+      userId: user.userId
+    }, "customized-secret-key");
+    res.cookie("Authorization", `Bearer ${token}`);
+    return res.json({ message: "로그인 완료" })
+  
+  })
+  
 
 
 module.exports = router;
