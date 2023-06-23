@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken")
 const User = require("../schemas/user")
+require('dotenv').config();
 
 module.exports = async (req, res, next) => {
     const {Authorization} = req.cookies
@@ -13,7 +14,7 @@ module.exports = async (req, res, next) => {
     }
 
     try{
-        const {userId} = jwt.verify(authToken, "customized-secret-key")
+        const {userId} = jwt.verify(authToken, process.env.DB_SECRETKEY)
         const user = await User.findById(userId);
         // db에서 userId로 사용자 정보를 가져왔으므로, 
         res.locals.user = user; 

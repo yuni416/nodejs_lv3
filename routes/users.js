@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../schemas/user");
 const authMiddleware = require("../middlewares/auth-middleware")
+require('dotenv').config();
 
 // 내 정보 조회 API, authmiddleware에 들어가서 인증절차를 거치고 req로 다시 여기로 돌아옴
 router.get("/users/me", authMiddleware, async(req,res) =>{
@@ -63,7 +64,7 @@ router.post('/login', async (req, res) => {
   
     const token = jwt.sign({
       userId: user.userId
-    }, "customized-secret-key");
+    }, process.env.DB_SECRETKEY);
     res.cookie("Authorization", `Bearer ${token}`);
     return res.json({ message: "로그인 완료" })
   
