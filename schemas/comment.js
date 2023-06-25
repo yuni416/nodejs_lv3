@@ -9,8 +9,13 @@ const commentsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    user: {
-        type: String
+    commentId: {
+        type: String,
+        required: true
+    },
+    nickname: {
+        type: String,
+        required: true
     },
     password: {
         type: String

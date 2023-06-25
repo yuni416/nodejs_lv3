@@ -3,22 +3,16 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require("../middlewares/auth-middleware")
 
-//schemes 불러오기
-const Comments = require('../schemas/comment.js');
+const { Comments } = require("../models");
 
 router.route('/comments/:_postId')
     //댓글 목록 조회
     .get(async (req, res) => {
         try {
             const postId = req.params._postId
-            const comments = await Comments.find({ "postId": postId })
-            const results = comments.map((comment) => {
-                return {
-                    commentId: comment._id,
-                    user: comment.user,
-                    content: comment.content,
-                    createdAt: comment.createdAt
-                }
+            const results = await Posts.findById({
+                where: { postId: postId },
+                attributes: ['commentId', 'nickname', 'content', 'createdAt']
             })
             res.json({ data: results })
         } catch {
@@ -33,8 +27,8 @@ router.route('/comments/:_postId')
             const postId = req.params._postId
             try {
                 const {userId} = res.locals.user
-                const { user, password, content } = req.body
-                await Comments.create({ postId: postId, user, password, content, userId })
+                const { nickname, password, content } = req.body
+                await Comments.create({ nickname, content, userId, password })
                 return res.status(200).json({ message: '댓글을 생성하였습니다.' })
             } catch {
                 return res.status(400).json({ message: '댓글 내용을 입력해주세요.' });
@@ -50,7 +44,7 @@ router.route('/comments/:_commentId')
         try {
             const {userId} = res.locals.user
             const commentId = req.params._commentId
-            const comment = await Comments.findById(userId, commentId)
+            const comment = await Comments.findById({ where: { postId, commentId } })
             const {password, content} = req.body
 
             if(!comment) {
@@ -72,13 +66,13 @@ router.route('/comments/:_commentId')
         try {
             const {userId} = res.locals.user
             const commentId = req.params._commentId
-            const comment = await Comments.findById(userId, commentId)
+            const comment = await Comments.findById({ where: { userId, commentId } })
             const password = req.body.password
             if (!comment) {
                 return res.status(404).json({message: '댓글 조회에 실패하였습니다.'})
             }
             if (password === comment.password) {
-                await Comments.deleteOne({userId, _id: commentId})
+                await Comments.deleteOne({ where: { userId, commentId } })
                 return res.status(200).json({message: '댓글을 삭제하였습니다.'})
             } else {
                 return res.status(404).json
